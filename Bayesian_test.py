@@ -14,6 +14,8 @@ bf.fit("회의 일정이 등록되었습니다.", "중요")
 bf.fit("오늘 일정이 없습니다.", "중요")
 
 # 예측
-pre, scorelist = bf.predict("재고 정리 할인, 무료 배송")
+# pre, scorelist = bf.predict("재고 정리 할인, 무료 배송")
+# pre, scorelist = bf.predict("프로젝트 수주 결과")
+pre, scorelist = bf.predict("회의 일정, 최종 결정")
 print("결과 =", pre)
 print(scorelist)

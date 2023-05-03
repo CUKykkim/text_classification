@@ -47,13 +47,13 @@ class BayesianFilter:
         for word in word_list:
             self.inc_word(word, category)
         self.inc_category(category)
-        print(self.word_dict)
+        
 
     # 단어 리스트에 점수 매기기-- (4)
     def score(self, words, category):
         score = math.log(self.category_prob(category))   #  카테고리 출현 빈도, 사전 확률
         for word in words :
-            score *= math.log(self.word_prob(word, category))   # 각 단어에 대한 가능도(Likelihood) 계산
+            score += math.log(self.word_prob(word, category))   # 각 단어에 대한 가능도(Likelihood) 계산
         return score
 
     #예측하기 -- (5)
