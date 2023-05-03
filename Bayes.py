@@ -4,7 +4,7 @@ from konlpy.tag import Okt
 class BayesianFilter:
     def __init__(self):
         self.words = set() # 출현한 단어 기록
-        self.word_dict = {} # 카테고리마다의 출현 횟수 기록
+        self.word_dict = {} # 카테고리마다의 단어 출현 횟수 기록
         self.category_dict = {} # 카테고리 출현 횟수 기록
     # 형태소 분석하기 -- (1)
     def split(self, text):
@@ -21,7 +21,7 @@ class BayesianFilter:
 
     #단어와 카테고리의 출현 횟수 세기 -- (2)
         # word_dict은 카테고리를 키(key)로, 해당 카테고리에 속한 단어들과 해당 단어의 출현 횟수를 딕셔너리 형태로 값(value)으로 가지고 있음
-     # 예 : {'광고': {'파격': 1, '할인': 1}}
+     # 예 : {'광고': {'파격': 1, '할인': 1}, '중요': {'회의':1, '계약':1, '프로젝트':1}}
      
     def inc_word(self, word, category):
         # 단어를 카테고리에 추가하기
@@ -34,7 +34,7 @@ class BayesianFilter:
 
     def inc_category(self, category):
         #카테고리 계산하기
-        #예: {광고 : 1}
+        #예: {'광고' : 2, '중요': 0}
         if not category in self.category_dict:   
             self.category_dict[category] = 0     # 새로운 카테고리가 등장했다면 카테고리 추가 
         self.category_dict[category] += 1        # 카테고리 등장횟수 카운트 
@@ -48,7 +48,7 @@ class BayesianFilter:
             self.inc_word(word, category)
         self.inc_category(category)
         
-
+    
     # 단어 리스트에 점수 매기기-- (4)
     def score(self, words, category):
         score = math.log(self.category_prob(category))   #  카테고리 출현 빈도, 사전 확률

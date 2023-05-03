@@ -1,6 +1,6 @@
 from Bayes import BayesianFilter
 bf = BayesianFilter()
-
+# word_dict { '광고' : {'파격': 1, '세일': 1} , '중요':{'회의': 1} }
 #텍스트 학습
 bf.fit("파격 세일 - 오늘까지만 30% 할인", "광고")
 bf.fit("쿠폰 선물 & 무료 배송", "광고")
