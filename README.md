@@ -18,7 +18,7 @@ from konlpy.tag import Okt
 class BayesianFilter:
     def __init__(self):
         self.words = set() # 출현한 단어 기록
-        self.word_dict = {} # 카테고리마다의 출현 횟수 기록
+        self.word_dict = {} # 카테고리마다의 단어 출현 횟수 기록
         self.category_dict = {} # 카테고리 출현 횟수 기록
     # 형태소 분석하기 -- (1)
     def split(self, text):
@@ -35,7 +35,7 @@ class BayesianFilter:
 
     #단어와 카테고리의 출현 횟수 세기 -- (2)
         # word_dict은 카테고리를 키(key)로, 해당 카테고리에 속한 단어들과 해당 단어의 출현 횟수를 딕셔너리 형태로 값(value)으로 가지고 있음
-     # 예 : {'광고': {'파격': 1, '할인': 1}}
+     # 예 : {'광고': {'파격': 1, '할인': 1}, '중요': {'회의':1, '계약':1, '프로젝트':1}}
      
     def inc_word(self, word, category):
         # 단어를 카테고리에 추가하기
@@ -48,7 +48,7 @@ class BayesianFilter:
 
     def inc_category(self, category):
         #카테고리 계산하기
-        #예: {광고 : 1}
+        #예: {'광고' : 2, '중요': 0}
         if not category in self.category_dict:   
             self.category_dict[category] = 0     # 새로운 카테고리가 등장했다면 카테고리 추가 
         self.category_dict[category] += 1        # 카테고리 등장횟수 카운트 
@@ -61,13 +61,14 @@ class BayesianFilter:
         for word in word_list:
             self.inc_word(word, category)
         self.inc_category(category)
-        print(self.word_dict)
-
+        
+    
     # 단어 리스트에 점수 매기기-- (4)
+    # log를 취해 컴퓨터의 부동소수 연산으로 인한 overhead를 줄임, log를 취하면 곱셈연산이 덧셈으로 변환
     def score(self, words, category):
         score = math.log(self.category_prob(category))   #  카테고리 출현 빈도, 사전 확률
         for word in words :
-            score *= math.log(self.word_prob(word, category))   # 각 단어에 대한 가능도(Likelihood) 계산
+            score += math.log(self.word_prob(word, category))   # 각 단어에 대한 가능도(Likelihood) 계산
         return score
 
     #예측하기 -- (5)
@@ -100,8 +101,8 @@ class BayesianFilter:
     
     #카테소리 내부의 단어 출현 비율 계산 -- (6)
     def word_prob(self, word, category):
-        n = self.get_word_count(word, category) + 1 # -- (6a)  특정 카테고리내에 단어수를 카운트
-        d = sum(self.word_dict[category].values()) + len(self.words)   #특정 카테고리에 있는 모든 단어 출현 빈도를 구함
+        n = self.get_word_count(word, category) + 1 # -- (6a)  특정 카테고리내에 단어수를 카운트, 1을 더해줌으로써, 한번도 등장하지 않은 단어가 나왔을때, score가 0이 되는 것을 방지
+        d = sum(self.word_dict[category].values()) + len(self.words)   #특정 카테고리에 있는 모든 단어 출현 빈도를 구함, 또한 len(self.words)를 함으로써,해당 카테고리에 존재하지 않는 단어도 포함하여 스무딩을 할 수 있음, 새로운 단어가 등장했을 때의 출현 확률이 0이 되는 것을 방지
         return n / d
 ```
 

@@ -50,6 +50,7 @@ class BayesianFilter:
         
     
     # 단어 리스트에 점수 매기기-- (4)
+    # log를 취해 컴퓨터의 부동소수 연산으로 인한 overhead를 줄임, log를 취하면 곱셈연산이 덧셈으로 변환
     def score(self, words, category):
         score = math.log(self.category_prob(category))   #  카테고리 출현 빈도, 사전 확률
         for word in words :
@@ -86,6 +87,6 @@ class BayesianFilter:
     
     #카테소리 내부의 단어 출현 비율 계산 -- (6)
     def word_prob(self, word, category):
-        n = self.get_word_count(word, category) + 1 # -- (6a)  특정 카테고리내에 단어수를 카운트
-        d = sum(self.word_dict[category].values()) + len(self.words)   #특정 카테고리에 있는 모든 단어 출현 빈도를 구함
+        n = self.get_word_count(word, category) + 1 # -- (6a)  특정 카테고리내에 단어수를 카운트, 1을 더해줌으로써, 한번도 등장하지 않은 단어가 나왔을때, score가 0이 되는 것을 방지
+        d = sum(self.word_dict[category].values()) + len(self.words)   #특정 카테고리에 있는 모든 단어 출현 빈도를 구함, 또한 len(self.words)를 함으로써,해당 카테고리에 존재하지 않는 단어도 포함하여 스무딩을 할 수 있음, 새로운 단어가 등장했을 때의 출현 확률이 0이 되는 것을 방지
         return n / d
